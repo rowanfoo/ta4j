@@ -71,7 +71,7 @@ sh 'ls'
             }
          }
 
-           stage('Build') {
+           stage('Deploy') {
                 steps {
                    echo "ALL IS DONE"
                      script {
