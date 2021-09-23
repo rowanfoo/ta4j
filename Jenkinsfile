@@ -52,6 +52,7 @@ sh 'ls'
         stage('BUILD  TAG APP') {
             steps {
               sh 'mvn -version'
+               sh 'mvn clean'
               sh 'mvn compile'
               sh 'mvn package -DskipTests'
             }
@@ -72,7 +73,7 @@ sh 'ls'
                    echo "ALL IS DONE"
                      script {
                         sh 'docker rm -f portfolio'
-                        sh """docker run -d  --restart=unless-stopped --name portfolio  -p 11000:50000 -e SPRING_DATASOURCE_URL=${env.dburl}   -e SPRING_DATASOURCE_USERNAME=postgres   -e SPRING_DATASOURCE_PASSWORD=${MY_CREDS_PSW} -e SPRING_MAIL_USERNAME=${env.gmail}  -e SPRING_MAIL_PASSWORD=${MY_CREDS_PSW}  localhost:5000/rowanf/orders"""
+                        sh """docker run -d  --restart=unless-stopped --name ta4j  -p 10100:8080 -e SPRING_DATASOURCE_URL=${env.dburl}   -e SPRING_DATASOURCE_USERNAME=postgres   -e SPRING_DATASOURCE_PASSWORD=${MY_CREDS_PSW} -e SPRING_MAIL_USERNAME=${env.gmail}  -e SPRING_MAIL_PASSWORD=${MY_CREDS_PSW}  localhost:5000/rowanf/taj"""
 
                     }
                 }
