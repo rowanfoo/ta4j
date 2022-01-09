@@ -23,9 +23,9 @@ pipeline {
 //                sh 'echo hello'
   //              sh 'pwd'
     //             sh 'mkdir -p project2'
-                cmd_exec( 'echo hello')
-                cmd_exec(  'cd ,')
-                 cmd_exec(  'mkdir -p project2')
+                bat( 'echo hello')
+                bat(  'cd ,')
+                 bat(  'mkdir -p project2')
 
              dir('project2'){
                 git (branch: 'history',url: 'https://github.com/rowanfoo/basej.git')
