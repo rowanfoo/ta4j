@@ -75,8 +75,10 @@ sh 'ls'
                 steps {
                    echo "ALL IS DONE"
                      script {
-                        sh 'docker rm -f ta4j'
-                        sh """docker run -d  --restart=unless-stopped --name ta4j  -p 10100:8080 -e SPRING_DATASOURCE_URL=${env.dburl}   -e SPRING_DATASOURCE_USERNAME=postgres   -e SPRING_DATASOURCE_PASSWORD=${MY_CREDS_PSW} -e SPRING_MAIL_USERNAME=${env.gmail}  -e SPRING_MAIL_PASSWORD=${MY_CREDS_PSW}  localhost:5000/rowanf/taj"""
+                //        sh 'docker rm -f ta4j'
+                  //      sh """docker run -d  --restart=unless-stopped --name ta4j  -p 10100:8080 -e SPRING_DATASOURCE_URL=${env.dburl}   -e SPRING_DATASOURCE_USERNAME=postgres   -e SPRING_DATASOURCE_PASSWORD=${MY_CREDS_PSW} -e SPRING_MAIL_USERNAME=${env.gmail}  -e SPRING_MAIL_PASSWORD=${MY_CREDS_PSW}  localhost:5000/rowanf/taj"""
+                        bat 'docker rm -f ta4j'
+                        bat """docker run -d  --restart=unless-stopped --name ta4j  -p 10100:8080 -e SPRING_DATASOURCE_URL=${env.dburl}   -e SPRING_DATASOURCE_USERNAME=postgres   -e SPRING_DATASOURCE_PASSWORD=${MY_CREDS_PSW} -e SPRING_MAIL_USERNAME=${env.gmail}  -e SPRING_MAIL_PASSWORD=${MY_CREDS_PSW}  localhost:5000/rowanf/taj"""
 
                     }
                 }
