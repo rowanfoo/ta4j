@@ -27,13 +27,13 @@ pipeline {
                 git (branch: 'history',url: 'https://github.com/rowanfoo/basej.git')
 //sh 'pwd'
 //sh 'ls'
-              bat 'cd ,'
+               cmd_exec( 'cd ,')
            //   sh 'mvn -version'
              // sh 'mvn compile'
              // sh 'mvn install -DskipTests'
-              bat 'mvn -version'
-              bat 'mvn compile'
-              bat 'mvn install -DskipTests'
+               cmd_exec( 'mvn -version')
+               cmd_exec( 'mvn compile')
+               cmd_exec( 'mvn install -DskipTests')
 
 
              }
