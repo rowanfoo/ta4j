@@ -25,11 +25,16 @@ pipeline {
                  sh 'mkdir -p project2'
              dir('project2'){
                 git (branch: 'history',url: 'https://github.com/rowanfoo/basej.git')
-sh 'pwd'
-sh 'ls'
-              sh 'mvn -version'
-              sh 'mvn compile'
-              sh 'mvn install -DskipTests'
+//sh 'pwd'
+//sh 'ls'
+              bat 'cd ,'
+           //   sh 'mvn -version'
+             // sh 'mvn compile'
+             // sh 'mvn install -DskipTests'
+              bat 'mvn -version'
+              bat 'mvn compile'
+              bat 'mvn install -DskipTests'
+
 
              }
 
@@ -42,9 +47,13 @@ sh 'ls'
             steps {
              dir('project3'){
                 git (branch: 'history',url: 'https://github.com/rowanfoo/base.git')
-              sh 'mvn -version'
-              sh 'mvn compile'
-              sh 'mvn install -DskipTests'
+//              sh 'mvn -version'
+  //            sh 'mvn compile'
+    //          sh 'mvn install -DskipTests'
+
+              bat 'mvn -version'
+              bat 'mvn compile'
+              bat  'mvn install -DskipTests'
 
              }
             }
@@ -54,10 +63,15 @@ sh 'ls'
 
         stage('BUILD  TAG APP') {
             steps {
-              sh 'mvn -version'
-               sh 'mvn clean'
-              sh 'mvn compile'
-              sh 'mvn package -DskipTests'
+//              sh 'mvn -version'
+  //             sh 'mvn clean'
+    //          sh 'mvn compile'
+      //        sh 'mvn package -DskipTests'
+
+              bat 'mvn -version'
+               bat 'mvn clean'
+              bat 'mvn compile'
+              bat 'mvn package -DskipTests'
             }
         }
 
@@ -66,7 +80,8 @@ sh 'ls'
                 script {
                     image_name = "localhost:5000/rowanf/taj"
                     dockerImage =  docker.build image_name
-                    sh 'pwd'
+                 //   sh 'pwd'
+                   bat 'cd ,'
                 }
             }
          }
