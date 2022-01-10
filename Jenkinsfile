@@ -23,21 +23,21 @@ pipeline {
 //                sh 'echo hello'
   //              sh 'pwd'
     //             sh 'mkdir -p project2'
-                bat( 'echo hello')
-                bat(  'cd ,')
-                 bat(  'mkdir -p project2')
+                bat  'echo hello'
+                bat   'cd ,'
+                 bat   'mkdir -p project2'
 
              dir('project2'){
                 git (branch: 'history',url: 'https://github.com/rowanfoo/basej.git')
 //sh 'pwd'
 //sh 'ls'
-               cmd_exec( 'cd ,')
+               bat( 'cd ,')
            //   sh 'mvn -version'
              // sh 'mvn compile'
              // sh 'mvn install -DskipTests'
-               cmd_exec( 'mvn -version')
-               cmd_exec( 'mvn compile')
-               cmd_exec( 'mvn install -DskipTests')
+               bat( 'mvn -version')
+               bat 'mvn compile')
+               bat  'mvn install -DskipTests')
 
 
              }
