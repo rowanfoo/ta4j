@@ -25,7 +25,7 @@ pipeline {
     //             sh 'mkdir -p project2'
                 bat  'echo hello'
                 bat   'cd ,'
-                 bat   'mkdir -p project2'
+             //    bat   'mkdir -p project2'
 
              dir('project2'){
                 git (branch: 'history',url: 'https://github.com/rowanfoo/basej.git')
