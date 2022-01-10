@@ -7,7 +7,7 @@ pipeline {
      portno="8080"
      targetport="10100"
        MY_CREDS = credentials('googlepass')
-       MY_NORMAL_CREDS = credentials('normal')
+    //   MY_NORMAL_CREDS = credentials('normal')
 
   }
     agent any
