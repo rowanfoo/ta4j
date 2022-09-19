@@ -53,14 +53,13 @@ class CategorysController {
             .fetch().filterNotNull()
     }
 
-
     @GetMapping("/category/stock/category/{category}/tag/{tag}")
     fun getTags(@PathVariable category: String, @PathVariable tag: String): List<String> {
         return stockrepo.findAll(
             QCoreStock.coreStock.tags.like("%$tag%").and(QCoreStock.coreStock.category.like("%$category%"))
         ).map { it.code }.toList();
     }
-
+//    http://localhost:8080/category/stocks/category/Mining
     @GetMapping("/category/stocks/{mode}/{category}")
     fun getMetaData(@PathVariable category: String, @PathVariable mode: String): List<JsonNode> {
         println("----------getMetaData-------$category---------------$mode---------")
