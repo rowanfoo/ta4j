@@ -127,13 +127,12 @@ fun madatajson(ma: MAManager, obj: JsonObject, stocks: List<String>): List<Objec
 
 fun fundamentaljson(fundamentalService: FundamentalService, code: String): ObjectNode {
     var fundamental = fundamentalService.code(code)
-    println("----------fundamentaljson------xxxx-----$fundamental----")
     var rootNode = mapper.createObjectNode()
 
     (rootNode as ObjectNode).put("code", code)
     (rootNode as ObjectNode).put("annualyield", fundamental.annualYied)
     (rootNode as ObjectNode).put("eps", fundamental.eps)
-    (rootNode as ObjectNode).put("marketcap", fundamental.marketcap)
+    (rootNode as ObjectNode).put("marketcap", fundamental.martketcapAsStringAsM)
     (rootNode as ObjectNode).put("pe", fundamental.pe)
     (rootNode as ObjectNode).put("shares", fundamental.shares)
     (rootNode as ObjectNode).put("yearhighprice", fundamental.yearHighPrice)
