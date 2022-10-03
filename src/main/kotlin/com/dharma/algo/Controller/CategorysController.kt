@@ -49,8 +49,7 @@ class CategorysController {
     fun getCats(@PathVariable name: String): List<String> {
         var queryFactory = JPAQueryFactory(entityManager);
         return queryFactory.selectDistinct(QCoreStock.coreStock.tags).from(QCoreStock.coreStock)
-            .where(QCoreStock.coreStock.category.like("%$name%"))
-            .fetch().filterNotNull()
+            .where(QCoreStock.coreStock.category.like("%$name%")).fetch().filterNotNull()
     }
 
 
@@ -61,6 +60,7 @@ class CategorysController {
         ).map { it.code }.toList();
     }
 
+    //http://localhost:8080/category/stocks/category/Mining
     @GetMapping("/category/stocks/{mode}/{category}")
     fun getMetaData(@PathVariable category: String, @PathVariable mode: String): List<JsonNode> {
         println("----------getMetaData-------$category---------------$mode---------")
@@ -73,7 +73,8 @@ class CategorysController {
         }
         return z
     }
-//http://localhost:8080//category/stocks/code/tag/producer,gold
+
+    //http://localhost:8080//category/stocks/code/tag/producer,gold
     @GetMapping("/category/stocks/code/{mode}/{category}")
     fun getcategorycode(@PathVariable category: String, @PathVariable mode: String): List<String> {
 
