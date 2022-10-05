@@ -60,6 +60,7 @@ class CategorysController {
         ).map { it.code }.toList();
     }
 
+    //http://localhost:8080/category/stocks/subcategory/Gold
     //http://localhost:8080/category/stocks/category/Mining
     @GetMapping("/category/stocks/{mode}/{category}")
     fun getMetaData(@PathVariable category: String, @PathVariable mode: String): List<JsonNode> {
