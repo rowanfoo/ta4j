@@ -2,6 +2,7 @@ package com.dharma.algo.service
 
 import arrow.syntax.function.curried
 import com.dhamma.ignitedata.manager.MAManager
+import com.dhamma.ignitedata.manager.RSIManager
 import com.dhamma.ignitedata.service.CoreDataIgniteService
 import com.dhamma.ignitedata.service.HistoryIndicatorService
 import com.dhamma.pesistence.entity.data.CoreStock
@@ -30,6 +31,9 @@ class CategoryService {
 
     @Autowired
     lateinit var ma: MAManager
+
+    @Autowired
+    lateinit var rsi: RSIManager
 
 
     @Autowired
@@ -83,47 +87,49 @@ class CategoryService {
         MA50.addProperty("time", "50")
 
         var majson = ::madatajson.curried()(ma)(MA50)
+        var rsijson = ::rsidatajson.curried()(rsi)
 
 
 //        fun madatajson(ma: MAManager, obj: JsonObject, stocks: List<String>): List<ObjectNode> {
         println("-----------start------------")
 
-        var t =
-            ls.map {
-                println("--------start stock------------${it.code}")
-                it.code
-            }
-                .map(addStockR)
-                .map {
-                    var z = addPrice(it["code"].asText())
-                    //        println("----------xxxx1---${z}-----------")
-                    (it as ObjectNode).setAll(z as ObjectNode)
+        var t = ls.map {
+            println("--------start stock------------${it.code}")
+            it.code
+        }.map(addStockR).map {
+            var z = addPrice(it["code"].asText())
+            //        println("----------xxxx1---${z}-----------")
+            (it as ObjectNode).setAll(z as ObjectNode)
 //                            println("----------yyyyy2---${it}-----------")
-                    it
-                }
-                .map {
-                    var z = perioddatajson(it["code"].asText())
-                    //   println("----------xxxx2---${z}-----------")
-                    (it as ObjectNode).setAll(z as ObjectNode)
+            it
+        }.map {
+            var z = perioddatajson(it["code"].asText())
+            //   println("----------xxxx2---${z}-----------")
+            (it as ObjectNode).setAll(z as ObjectNode)
 //                            println("----------yyyyy4---${it}-----------")
-                    it
-                }
-                .map {
+            it
+        }.map {
 
-                    var z = majson(listOf(it["code"].asText()))
-                    //  println("---------zzzzz3---${z}-----------")
-                    (it as ObjectNode).setAll(z[0] as ObjectNode)
+            var z = majson(listOf(it["code"].asText()))
+            //  println("---------zzzzz3---${z}-----------")
+            (it as ObjectNode).setAll(z[0] as ObjectNode)
 //                            println("----------yyyyy5---${it}-----------")
-                    it
-                }
-                .map {
-                    //  println("----------zzzzz4---${it}-----------")
-                    var z = addfundamentalR(it["code"].asText())
-                    (it as ObjectNode).setAll(z as ObjectNode)
-                    //    println("----------yyyyy6---${it}-----------")
-                    it
-                }
-                .toList()
+            it
+        }.map {
+            //  println("----------zzzzz4---${it}-----------")
+            var z = addfundamentalR(it["code"].asText())
+            (it as ObjectNode).setAll(z as ObjectNode)
+            //    println("----------yyyyy6---${it}-----------")
+            it
+        }.map {
+                println("----------zzzzz5---${it}-----------")
+                var z = rsijson(it["code"].asText())
+                (it as ObjectNode).setAll(z as ObjectNode)
+                println("----------yyyyy6---${it}-----------")
+                it
+            }
+
+            .toList()
         return t
 
         //is there ghost

@@ -1,6 +1,7 @@
 package com.dharma.algo.service
 
 import com.dhamma.ignitedata.manager.MAManager
+import com.dhamma.ignitedata.manager.RSIManager
 import com.dhamma.ignitedata.service.CoreDataIgniteService
 import com.dhamma.ignitedata.service.NewsIgniteService
 import com.dhamma.pesistence.entity.data.CoreStock
@@ -59,9 +60,7 @@ var mapper = ObjectMapper()
 
 
 fun stocktojson(
-    stockservice: Map<String, CoreStock>,
-    allFundamental: Map<String, Fundamental>,
-    code: String
+    stockservice: Map<String, CoreStock>, allFundamental: Map<String, Fundamental>, code: String
 ): JsonNode {
     var stk = stockservice.get(code)
 
@@ -95,16 +94,13 @@ fun perioddatajson(coreDataIgniteService: CoreDataIgniteService, code: String): 
     var rootNode = mapper.createObjectNode()
     (rootNode as ObjectNode).put("code", code)
     (rootNode as ObjectNode).put(
-        "weeky",
-        Maths.percentformat(coreDataIgniteService.priceperiodprecent(code, "week") * 100)
+        "weeky", Maths.percentformat(coreDataIgniteService.priceperiodprecent(code, "week") * 100)
     )
     (rootNode as ObjectNode).put(
-        "month",
-        Maths.percentformat(coreDataIgniteService.priceperiodprecent(code, "month") * 100)
+        "month", Maths.percentformat(coreDataIgniteService.priceperiodprecent(code, "month") * 100)
     )
     (rootNode as ObjectNode).put(
-        "month3",
-        Maths.percentformat(coreDataIgniteService.priceperiodprecent(code, "3month") * 100)
+        "month3", Maths.percentformat(coreDataIgniteService.priceperiodprecent(code, "3month") * 100)
     )
     return rootNode
 }
@@ -124,6 +120,12 @@ fun madatajson(ma: MAManager, obj: JsonObject, stocks: List<String>): List<Objec
     return t
 }
 
+fun rsidatajson(rsi: RSIManager, stocks: String): ObjectNode {
+    var rootNode = mapper.createObjectNode()
+    var z = rsi.getRSI(stocks)
+    var t = (rootNode as ObjectNode).put("rsi", z.toString())
+    return rootNode
+}
 
 fun fundamentaljson(fundamentalService: FundamentalService, code: String): ObjectNode {
     var fundamental = fundamentalService.code(code)
