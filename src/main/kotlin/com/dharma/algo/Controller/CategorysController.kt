@@ -75,6 +75,14 @@ class CategorysController {
         return z
     }
 
+    @GetMapping("/category/stocks/mktCapGreater1b/{category}")
+    fun getMarketCap1b(@PathVariable category: String): List<JsonNode> {
+        println("----------getMarketCap1b-------$category---------------$category---------")
+       var z: List<JsonNode> =    categoryService.mktCapGreater1b(category)
+
+        return z
+    }
+
     //http://localhost:8080//category/stocks/code/tag/producer,gold
     @GetMapping("/category/stocks/code/{mode}/{category}")
     fun getcategorycode(@PathVariable category: String, @PathVariable mode: String): List<String> {
