@@ -8,6 +8,9 @@ import com.dhamma.ignitedata.service.HistoryIndicatorService
 import com.dhamma.pesistence.entity.data.CoreStock
 import com.dhamma.pesistence.entity.data.Fundamental
 import com.dhamma.pesistence.entity.data.QCoreStock
+import com.dhamma.pesistence.entity.data.QFundamental
+import com.dhamma.pesistence.entity.repo.FundamentalRepo
+import com.dhamma.pesistence.service.NewsServices
 import com.dhamma.pesistence.entity.repo.StockRepo
 import com.dhamma.pesistence.service.FundamentalService
 import com.fasterxml.jackson.databind.JsonNode
@@ -39,10 +42,16 @@ class CategoryService {
     @Autowired
     lateinit var fundamentalservice: FundamentalService
 
+    @Autowired
+    lateinit var newsService: NewsServices
+
+    @Autowired
+    lateinit var fundamentalRepo: FundamentalRepo
 
     lateinit var addPrice: (String) -> JsonNode
 
     lateinit var addfundamentalR: (String) -> JsonNode
+    lateinit var addNewsR: (String) -> JsonNode
     lateinit var addStockR: (String) -> JsonNode
 
 
@@ -76,11 +85,23 @@ class CategoryService {
         return addAdditionInfo(z)
     }
 
+
+    fun mktCapGreater1b(name: String): List<JsonNode> {
+        var codes = fundamentalRepo.findAll(QFundamental.fundamental.marketcap.gt(1000000000)).map { it.code }.toList()
+        var z = stockrepo.findAll(QCoreStock.coreStock.code.`in`(codes).and(QCoreStock.coreStock.category.like(name)  )   ).toList()
+        println("----------mktCapGreater1b---${z.size}-----------")
+        return addAdditionInfo(z)
+    }
+
     fun addAdditionInfo(ls: List<CoreStock>): List<JsonNode> {
         addPrice = ::pricedatajson.curried()(coreDataIgniteService)(historyIndicatorService.today().toString())
         var perioddatajson = ::perioddatajson.curried()(coreDataIgniteService)
 
         addfundamentalR = ::fundamentaljson.curried()(fundamentalservice)
+        addNewsR = ::newstodayjson.curried()(newsService)
+
+
+
 
         var MA50 = JsonObject()
         MA50.addProperty("mode", "price")
@@ -128,8 +149,14 @@ class CategoryService {
                 println("----------yyyyy6---${it}-----------")
                 it
             }
-
-            .toList()
+            .map {
+                println("----------NEWS 1---${it}-----------")
+                var z = addNewsR(it["code"].asText())
+                (it as ObjectNode).setAll(z as ObjectNode)
+                println("----------NEWS 2---${it}-----------")
+                it
+            }
+        .toList()
         return t
 
         //is there ghost
