@@ -8,6 +8,7 @@ import com.dhamma.pesistence.entity.data.CoreStock
 import com.dhamma.pesistence.entity.data.Fundamental
 import com.dhamma.pesistence.entity.data.HistoryIndicators
 import com.dhamma.pesistence.service.FundamentalService
+import com.dhamma.pesistence.service.NewsServices
 import com.dharma.algo.data.pojo.Stock
 import com.dharma.algo.data.pojo.techstr
 import com.dharma.algo.utility.Json
@@ -16,6 +17,10 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.google.gson.JsonObject
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder.json
+
+
+
 
 
 fun historyIndicatorstoTechstrs(list: List<HistoryIndicators>): List<techstr> {
@@ -146,4 +151,17 @@ fun fundamentaljson(fundamentalService: FundamentalService, code: String): Objec
 
 
 
+
+fun newstodayjson(newsService: NewsServices, code: String): ObjectNode {
+    var fundamental = newsService.threeDays(code)
+    var rootNode = mapper.createObjectNode()
+
+    (rootNode as ObjectNode).put("code", code)
+    val info: ObjectNode = (rootNode as ObjectNode).putObject("news")
+   var arraynode=  info.putArray("news")
+    fundamental.forEach{
+        arraynode .add(it.title )
+    }
+    return rootNode
+}
 
