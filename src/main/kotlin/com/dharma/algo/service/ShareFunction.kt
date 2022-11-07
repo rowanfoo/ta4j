@@ -4,6 +4,7 @@ import com.dhamma.ignitedata.manager.MAManager
 import com.dhamma.ignitedata.manager.RSIManager
 import com.dhamma.ignitedata.service.CoreDataIgniteService
 import com.dhamma.ignitedata.service.NewsIgniteService
+import com.dhamma.ignitedata.service.PeriodService
 import com.dhamma.pesistence.entity.data.CoreStock
 import com.dhamma.pesistence.entity.data.Fundamental
 import com.dhamma.pesistence.entity.data.HistoryIndicators
@@ -72,7 +73,7 @@ fun stocktojson(
     var rootNode = mapper.createObjectNode()
     (rootNode as ObjectNode).put("code", stk?.code)
     (rootNode as ObjectNode).put("name", stk?.name)
-    (rootNode as ObjectNode).put("shares", stk?.shares)
+    (rootNode as ObjectNode).put("shares",allFundamental[stk?.code]?.shares)
     (rootNode as ObjectNode).put("marketcap", allFundamental[stk?.code]?.martketcapAsString)
     (rootNode as ObjectNode).put("category", stk?.category)
     (rootNode as ObjectNode).put("subcategory", stk?.subcategory)
@@ -93,6 +94,29 @@ fun pricedatajson(coreDataIgniteService: CoreDataIgniteService, date: String, co
     (rootNode as ObjectNode).put("date", data.date.toString())
     return rootNode
 }
+
+fun perioddatamonthjson(periodService: PeriodService, code: String): ObjectNode {
+   // println("----perioddatamonthjson data-----")
+    var data = periodService.getMonth(code)
+  //  println("----perioddatajson data------$data")
+    return data
+}
+
+fun perioddataweekjson(periodService: PeriodService, code: String): ObjectNode {
+   // println("----perioddataweekjson data-----")
+    var data = periodService.getWeek(code)
+ //   println("----perioddataweekjson data------$data")
+    return data
+}
+
+fun perioddata3monthjson(periodService: PeriodService, code: String): ObjectNode {
+   // println("----perioddatamonthjson data-----")
+    var data = periodService.get3Month(code)
+  //  println("----perioddatajson data------$data")
+    return data
+}
+
+
 
 fun perioddatajson(coreDataIgniteService: CoreDataIgniteService, code: String): ObjectNode {
 

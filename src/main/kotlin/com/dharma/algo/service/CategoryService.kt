@@ -5,6 +5,7 @@ import com.dhamma.ignitedata.manager.MAManager
 import com.dhamma.ignitedata.manager.RSIManager
 import com.dhamma.ignitedata.service.CoreDataIgniteService
 import com.dhamma.ignitedata.service.HistoryIndicatorService
+import com.dhamma.ignitedata.service.PeriodService
 import com.dhamma.pesistence.entity.data.CoreStock
 import com.dhamma.pesistence.entity.data.Fundamental
 import com.dhamma.pesistence.entity.data.QCoreStock
@@ -58,6 +59,10 @@ class CategoryService {
     @Autowired
     lateinit var historyIndicatorService: HistoryIndicatorService
 
+    @Autowired
+    lateinit var periodService: PeriodService
+
+
     /// is this latest version
     @Autowired
     lateinit var allFundamental: Map<String, Fundamental>
@@ -85,7 +90,6 @@ class CategoryService {
         return addAdditionInfo(z)
     }
 
-
     fun mktCapGreater1b(name: String): List<JsonNode> {
         var codes = fundamentalRepo.findAll(QFundamental.fundamental.marketcap.gt(1000000000)).map { it.code }.toList()
         var z = stockrepo.findAll(QCoreStock.coreStock.code.`in`(codes).and(QCoreStock.coreStock.category.like(name)  )   ).toList()
@@ -95,7 +99,7 @@ class CategoryService {
 
     fun addAdditionInfo(ls: List<CoreStock>): List<JsonNode> {
         addPrice = ::pricedatajson.curried()(coreDataIgniteService)(historyIndicatorService.today().toString())
-        var perioddatajson = ::perioddatajson.curried()(coreDataIgniteService)
+        //var perioddatajson = ::perioddatajson.curried()(coreDataIgniteService)
 
         addfundamentalR = ::fundamentaljson.curried()(fundamentalservice)
         addNewsR = ::newstodayjson.curried()(newsService)
@@ -107,8 +111,19 @@ class CategoryService {
         MA50.addProperty("mode", "price")
         MA50.addProperty("time", "50")
 
+        var MA200 = JsonObject()
+        MA200.addProperty("mode", "price")
+        MA200.addProperty("time", "200")
+
+
         var majson = ::madatajson.curried()(ma)(MA50)
+        var majson200 = ::madatajson.curried()(ma)(MA200)
+
         var rsijson = ::rsidatajson.curried()(rsi)
+        var perioddatamonth  = ::perioddatamonthjson.curried()(periodService)
+        var perioddataweekjson  = ::perioddataweekjson.curried()(periodService)
+        var perioddata3monthjson  = ::perioddata3monthjson.curried()(periodService)
+
 
 
 //        fun madatajson(ma: MAManager, obj: JsonObject, stocks: List<String>): List<ObjectNode> {
@@ -124,36 +139,69 @@ class CategoryService {
 //                            println("----------yyyyy2---${it}-----------")
             it
         }.map {
-            var z = perioddatajson(it["code"].asText())
+            var z = perioddatamonth(it["code"].asText())
             //   println("----------xxxx2---${z}-----------")
             (it as ObjectNode).setAll(z as ObjectNode)
 //                            println("----------yyyyy4---${it}-----------")
             it
-        }.map {
+        }
+//            .map {
+//                var z = perioddatajson(it["code"].asText())
+//                //   println("----------xxxx2---${z}-----------")
+//                (it as ObjectNode).setAll(z as ObjectNode)
+////                            println("----------yyyyy4---${it}-----------")
+//                it
+//            }
 
-            var z = majson(listOf(it["code"].asText()))
+            .map {
+                var z = perioddataweekjson(it["code"].asText())
+                //   println("----------xxxx2---${z}-----------")
+                (it as ObjectNode).setAll(z as ObjectNode)
+//                            println("----------yyyyy4---${it}-----------")
+                it
+            }
+
+            .map {
+                var z = perioddata3monthjson(it["code"].asText())
+                (it as ObjectNode).setAll(z as ObjectNode)
+                it
+            }
+
+
+            .map {
+
+            var z = majson200(listOf(it["code"].asText()))
             //  println("---------zzzzz3---${z}-----------")
             (it as ObjectNode).setAll(z[0] as ObjectNode)
 //                            println("----------yyyyy5---${it}-----------")
             it
-        }.map {
+        }
+            .map {
+
+                var z = majson(listOf(it["code"].asText()))
+                //  println("---------zzzzz3---${z}-----------")
+                (it as ObjectNode).setAll(z[0] as ObjectNode)
+//                            println("----------yyyyy5---${it}-----------")
+                it
+            }
+            .map {
             //  println("----------zzzzz4---${it}-----------")
             var z = addfundamentalR(it["code"].asText())
             (it as ObjectNode).setAll(z as ObjectNode)
             //    println("----------yyyyy6---${it}-----------")
             it
         }.map {
-                println("----------zzzzz5---${it}-----------")
+            //    println("----------zzzzz5---${it}-----------")
                 var z = rsijson(it["code"].asText())
                 (it as ObjectNode).setAll(z as ObjectNode)
-                println("----------yyyyy6---${it}-----------")
+                //println("----------yyyyy6---${it}-----------")
                 it
             }
             .map {
-                println("----------NEWS 1---${it}-----------")
+               // println("----------NEWS 1---${it}-----------")
                 var z = addNewsR(it["code"].asText())
                 (it as ObjectNode).setAll(z as ObjectNode)
-                println("----------NEWS 2---${it}-----------")
+             //   println("----------NEWS 2---${it}-----------")
                 it
             }
         .toList()
