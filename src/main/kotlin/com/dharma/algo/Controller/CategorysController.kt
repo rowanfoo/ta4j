@@ -72,6 +72,7 @@ class CategorysController {
         } else {
             categoryService.tag(category)
         }
+        println(z )
         return z
     }
 
@@ -79,9 +80,21 @@ class CategorysController {
     fun getMarketCap1b(@PathVariable category: String): List<JsonNode> {
         println("----------getMarketCap1b-------$category---------------$category---------")
        var z: List<JsonNode> =    categoryService.mktCapGreater1b(category)
-
         return z
     }
+
+    @GetMapping("/category/stocks/portfolio")
+    fun portfolio(): List<JsonNode> {
+        var z: List<JsonNode> =    categoryService.portfolio()
+        return z
+    }
+
+    @GetMapping("/category/stocks/wishlist")
+    fun wishlist(): List<JsonNode> {
+        var z: List<JsonNode> =    categoryService.wishlist()
+        return z
+    }
+
 
     //http://localhost:8080//category/stocks/code/tag/producer,gold
     @GetMapping("/category/stocks/code/{mode}/{category}")
