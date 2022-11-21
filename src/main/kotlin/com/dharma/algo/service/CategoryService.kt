@@ -6,11 +6,9 @@ import com.dhamma.ignitedata.manager.RSIManager
 import com.dhamma.ignitedata.service.CoreDataIgniteService
 import com.dhamma.ignitedata.service.HistoryIndicatorService
 import com.dhamma.ignitedata.service.PeriodService
-import com.dhamma.pesistence.entity.data.CoreStock
-import com.dhamma.pesistence.entity.data.Fundamental
-import com.dhamma.pesistence.entity.data.QCoreStock
-import com.dhamma.pesistence.entity.data.QFundamental
+import com.dhamma.pesistence.entity.data.*
 import com.dhamma.pesistence.entity.repo.FundamentalRepo
+import com.dhamma.pesistence.entity.repo.PortfolioRepo
 import com.dhamma.pesistence.service.NewsServices
 import com.dhamma.pesistence.entity.repo.StockRepo
 import com.dhamma.pesistence.service.FundamentalService
@@ -67,38 +65,53 @@ class CategoryService {
     @Autowired
     lateinit var allFundamental: Map<String, Fundamental>
 
+    @Autowired
+    lateinit var portfolioRepo : PortfolioRepo
+
     @PostConstruct
     fun init() {
         addStockR = ::stocktojson.curried()(allStocks)(allFundamental)
     }
 
     fun category(name: String): List<JsonNode> {
-        var z = stockrepo.findAll(QCoreStock.coreStock.category.like("%$name%")).toList()
+        var z = stockrepo.findAll(QCoreStock.coreStock.category.like("%$name%")).map { it.code }. toList()
         println("----------category---${z.size}-----------")
         return addAdditionInfo(z)
     }
 
     fun subcategory(name: String): List<JsonNode> {
-        var z = stockrepo.findAll(QCoreStock.coreStock.subcategory.like("%$name%")).toList()
+        var z = stockrepo.findAll(QCoreStock.coreStock.subcategory.like("%$name%")).map { it.code }.toList()
         println("----------subcategory---${z.size}-----------")
         return addAdditionInfo(z)
     }
 
+    fun wishlist (): List<JsonNode> {
+        var z = stockrepo.findAll(QCoreStock.coreStock.wishlist.eq(true )).map { it.code }.toList()
+        println("----------subcategory---${z.size}-----------")
+        return addAdditionInfo(z)
+    }
+
+    fun portfolio(): List<JsonNode> {
+        var z = portfolioRepo.findAll().map { it.code }.distinct() .toList()
+        println("----------portfolio---${z}-----------")
+        return addAdditionInfo(z)
+    }
+
     fun tag(name: String): List<JsonNode> {
-        var z = stockrepo.findAll(QCoreStock.coreStock.tags.like("%$name%")).toList()
+        var z = stockrepo.findAll(QCoreStock.coreStock.tags.like("%$name%")).map { it.code }. toList()
         println("----------tag---${z.size}-----------")
         return addAdditionInfo(z)
     }
 
     fun mktCapGreater1b(name: String): List<JsonNode> {
         var codes = fundamentalRepo.findAll(QFundamental.fundamental.marketcap.gt(1000000000)).map { it.code }.toList()
-        var z = stockrepo.findAll(QCoreStock.coreStock.code.`in`(codes).and(QCoreStock.coreStock.category.like(name)  )   ).toList()
+        var z = stockrepo.findAll(QCoreStock.coreStock.code.`in`(codes).and(QCoreStock.coreStock.category.like(name)  )   ).map { it.code }.toList()
         println("----------mktCapGreater1b---${z.size}-----------")
         return addAdditionInfo(z)
     }
 
-    fun addAdditionInfo(ls: List<CoreStock>): List<JsonNode> {
-        addPrice = ::pricedatajson.curried()(coreDataIgniteService)(historyIndicatorService.today().toString())
+    fun addAdditionInfo(ls: List<String>): List<JsonNode> {
+           addPrice = ::pricedatajson.curried()(coreDataIgniteService)(historyIndicatorService.today().toString())
         //var perioddatajson = ::perioddatajson.curried()(coreDataIgniteService)
 
         addfundamentalR = ::fundamentaljson.curried()(fundamentalservice)
@@ -129,17 +142,19 @@ class CategoryService {
 //        fun madatajson(ma: MAManager, obj: JsonObject, stocks: List<String>): List<ObjectNode> {
         println("-----------start------------")
 
-        var t = ls.map {
-            println("--------start stock------------${it.code}")
-            it.code
-        }.map(addStockR).map {
+        var t =
+            ls.map(addStockR).map {
             var z = addPrice(it["code"].asText())
             //        println("----------xxxx1---${z}-----------")
             (it as ObjectNode).setAll(z as ObjectNode)
 //                            println("----------yyyyy2---${it}-----------")
             it
         }.map {
+                println("----------MONTH---${it}-----------")
             var z = perioddatamonth(it["code"].asText())
+                println("----------MONTH--OK----------")
+
+
             //   println("----------xxxx2---${z}-----------")
             (it as ObjectNode).setAll(z as ObjectNode)
 //                            println("----------yyyyy4---${it}-----------")
@@ -203,7 +218,7 @@ class CategoryService {
                 (it as ObjectNode).setAll(z as ObjectNode)
              //   println("----------NEWS 2---${it}-----------")
                 it
-            }
+            }.sortedByDescending {  it["marketcap"].asText().toLong() }
         .toList()
         return t
 
