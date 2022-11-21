@@ -6,6 +6,7 @@ import com.dhamma.pesistence.entity.data.QNews
 import com.dhamma.pesistence.entity.repo.NewsRepo
 import com.dharma.algo.service.NewsService
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.google.common.collect.Lists
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
@@ -78,6 +79,17 @@ class NewsController {
         }
     }
 
+    //http://localhost:9000//news/codes/week/BGL.AX,CTM.AX,NIC.AX
+    @GetMapping("/news/codes/week/{code}")
+    fun codesweek(@PathVariable code: String): List<News> {
+        println("--------------codes2week $code")
+        val codes = code.split(",")
+        val list=
+            newsRepo.findAll(
+                QNews.news.code.`in`(codes).and(QNews.news.date.gt(LocalDate.now().minusDays(7)))
+        ).toList()
+           return list.sortedBy { it.code }.sortedBy { it.date } .toList()
+    }
 
 }
 
