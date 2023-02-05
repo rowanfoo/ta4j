@@ -4,6 +4,7 @@ import arrow.syntax.function.curried
 import com.dhamma.ignitedata.service.HistoryIndicatorService
 import com.dhamma.ignitedata.service.NewsIgniteService
 import com.dhamma.pesistence.entity.data.CoreStock
+import com.dhamma.pesistence.entity.data.HistoryIndicators
 import com.dhamma.pesistence.service.FundamentalService
 import com.dharma.algo.data.pojo.techstr
 import org.springframework.beans.factory.annotation.Autowired
@@ -84,5 +85,25 @@ class AlgoService1 {
         var z = PageImpl<techstr>(content, PageRequest.of(page.first, page.second), mypage.totalElements)
         return z
     }
+
+
+    fun processmessage(
+        id: String
+    ): List<techstr> {
+        setFunction(false, true , true, false)
+
+        var xx = mutableListOf<HistoryIndicators>()
+        id.split(",").forEach{
+            var data = historyIndicatorService.todaycodemsg(it)
+            if (data != null) xx.add(data)
+        }
+
+        var content = historyIndicatorstoTechstrs(xx)
+                      .onEach { setNewsC(it) }
+            .onEach { setFundC(it) }
+            .toList()
+       return content
+    }
+
 
 }
