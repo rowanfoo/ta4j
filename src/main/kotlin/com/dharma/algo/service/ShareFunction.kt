@@ -3,6 +3,7 @@ package com.dharma.algo.service
 import com.dhamma.ignitedata.manager.MAManager
 import com.dhamma.ignitedata.manager.RSIManager
 import com.dhamma.ignitedata.service.CoreDataIgniteService
+import com.dhamma.ignitedata.service.HistoryIndicatorService
 import com.dhamma.ignitedata.service.NewsIgniteService
 import com.dhamma.ignitedata.service.PeriodService
 import com.dhamma.pesistence.entity.data.CoreStock
@@ -175,7 +176,7 @@ fun fundamentaljson(fundamentalService: FundamentalService, code: String): Objec
 
 
 
-
+// get the last 3 days news
 fun newstodayjson(newsService: NewsServices, code: String): ObjectNode {
     var fundamental = newsService.threeDays(code)
     var rootNode = mapper.createObjectNode()
@@ -189,3 +190,13 @@ fun newstodayjson(newsService: NewsServices, code: String): ObjectNode {
     return rootNode
 }
 
+// get the last 5 days news
+fun historyindicatorWeekjson(historyIndicatorServicervice: HistoryIndicatorService, code: String): ObjectNode {
+    var history = historyIndicatorServicervice.weekcodemsg(code)
+    var rootNode = mapper.createObjectNode()
+    (rootNode as ObjectNode).put("code", code)
+    if ( history != null ){
+        (rootNode as ObjectNode).put("indicator", history.message)
+    }
+    return rootNode
+}

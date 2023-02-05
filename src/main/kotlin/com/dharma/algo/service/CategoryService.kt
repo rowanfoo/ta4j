@@ -31,6 +31,9 @@ class CategoryService {
     @Autowired
     lateinit var coreDataIgniteService: CoreDataIgniteService
 
+
+
+
     @Autowired
     lateinit var ma: MAManager
 
@@ -52,6 +55,8 @@ class CategoryService {
     lateinit var addfundamentalR: (String) -> JsonNode
     lateinit var addNewsR: (String) -> JsonNode
     lateinit var addStockR: (String) -> JsonNode
+
+    lateinit var addHistoryIndicatorR: (String) -> JsonNode
 
 
     @Autowired
@@ -112,6 +117,7 @@ class CategoryService {
 
     fun addAdditionInfo(ls: List<String>): List<JsonNode> {
            addPrice = ::pricedatajson.curried()(coreDataIgniteService)(historyIndicatorService.today().toString())
+        addHistoryIndicatorR = ::historyindicatorWeekjson.curried()(historyIndicatorService)
         //var perioddatajson = ::perioddatajson.curried()(coreDataIgniteService)
 
         addfundamentalR = ::fundamentaljson.curried()(fundamentalservice)
@@ -218,7 +224,19 @@ class CategoryService {
                 (it as ObjectNode).setAll(z as ObjectNode)
              //   println("----------NEWS 2---${it}-----------")
                 it
-            }.sortedByDescending {  it["marketcap"].asText().toLong() }
+            }
+                .map {
+                     println("----------HISTORIC-INDICATOR 1---${it}-----------")
+                    var z = addHistoryIndicatorR(it["code"].asText())
+                    (it as ObjectNode).setAll(z as ObjectNode)
+                       println("----------HISTORIC-INDICATOR 2---${it}-----------")
+                    it
+                }
+
+
+
+
+                .sortedByDescending {  it["marketcap"].asText().toLong() }
         .toList()
         return t
 
