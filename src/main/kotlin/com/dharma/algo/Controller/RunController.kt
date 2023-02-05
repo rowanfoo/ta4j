@@ -67,6 +67,13 @@ class RunController {
     ): Page<techstr> {
         return algoService1.process(id, date, true, true, true, true, Pair<Int, Int>(page, size))
     }
+   // http://localhost:8080/algo/messages/1AD.AX,360.AX
+    @GetMapping("/algo/messages/{codes}")
+    fun algomessages(
+        @PathVariable codes: String):List<techstr> {
+        return algoService1.processmessage(codes)
+    }
+
 
 //
 //
